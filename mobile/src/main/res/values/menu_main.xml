@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="menu_main">
+        <item>Simple Notification</item>
+        <item>Standard Action Notification</item>
+        <item>Custom Action Notification</item>
+        <item>Voice Input Notification</item>
+        <item>Multiple Pages Notification</item>
+        <item>Grouped Notification</item>
+    </string-array>
+</resources>
