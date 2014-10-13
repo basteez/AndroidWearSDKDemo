@@ -3,6 +3,8 @@ package com.tizianobasile.wearsdkdemo;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
@@ -11,10 +13,12 @@ import android.support.v4.app.RemoteInput;
 import android.support.v4.app.NotificationCompat.Action;
 import android.support.v4.app.NotificationCompat.WearableExtender;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 
 public class HandheldMainActivity extends ActionBarActivity {
@@ -29,9 +33,10 @@ public class HandheldMainActivity extends ActionBarActivity {
     //EXTRAS CONSTANTS
     public static final String EXTRA_VOICE_REPLY = "VoiceReply";
 
+    //GROUP CONSTANTS
+    public static final String GROUP_ID = "com.tizianobasile.wearsdkdemo.group";
     //GUI
     private ListView menuList;
-
     private String[] menuEntries;
 
     @Override
@@ -145,16 +150,74 @@ public class HandheldMainActivity extends ActionBarActivity {
 
     public Notification createPagedNotification(){
 
-        return null;
+        NotificationCompat.Builder mFirstPageBuilder = new NotificationCompat.Builder(this)
+            .setSmallIcon(R.drawable.ic_launcher)
+            .setContentTitle("Paged notification 1/2")
+            .setContentText("This is the first page");
+
+        Notification mSecondPage =
+                new NotificationCompat.Builder(this)
+            .setContentTitle("Paged Notification 2/2")
+            .setContentText("This is the second page")
+        .build();
+
+        Notification mNotification =
+                new WearableExtender()
+                .addPage(mSecondPage)
+                .extend(mFirstPageBuilder)
+                .build();
+        return mNotification;
     }
 
-    public Notification createGroupedNotification(){return null;}
+    public Notification[] createGroupedNotification(){
+        Notification mFirstNotification = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setContentTitle("First Notification")
+                .setContentText("Hi, I'm a notification")
+                .setGroup(GROUP_ID)
+                .build();
+
+        Notification mSecondNotification = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setContentTitle("Second Notification")
+                .setContentText("Yay, here's the second one!")
+                .setGroup(GROUP_ID)
+                .build();
+
+        Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
+
+        Notification mSummaryNotification = new NotificationCompat.Builder(this)
+                .setContentTitle("2 Notifications fromw WearSDKDemo")
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setLargeIcon(largeIcon)
+                .setStyle(new NotificationCompat.InboxStyle()
+                    .addLine("First Notification    Hi, I'm a notification")
+                    .addLine("Second Notification   Yay, here's the second one!")
+                    .setBigContentTitle("2 Notifications from WearSDKDemo")
+                    .setSummaryText("com.tizianobasile.wearsdkdemo"))
+                .setGroup(GROUP_ID)
+                .setGroupSummary(true)
+                .build();
+
+        Notification[] notifications = new Notification[]{mFirstNotification, mSecondNotification, mSummaryNotification};
+
+        return notifications;
+    }
 
     public void issueNotification(int mNotificationId, Notification mNotification){
         //Get a reference for NotificationManagerCompat
         NotificationManagerCompat mNotificationManager = NotificationManagerCompat.from(this);
         //issue the notification
         mNotificationManager.notify(mNotificationId, mNotification);
+    }
+
+    public void issueNotification(int notificationId, Notification[] mNotification){
+        NotificationManagerCompat mNotificationManager = NotificationManagerCompat.from(this);
+        int i = 0;
+        for(Notification notification : mNotification){
+            mNotificationManager.notify(notificationId + i, notification);
+            i++;
+        }
     }
 
 }
