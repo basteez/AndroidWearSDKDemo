@@ -7,5 +7,7 @@
         <item>Voice Input Notification</item>
         <item>Multiple Pages Notification</item>
         <item>Grouped Notification</item>
+        <item>DataItem Sync</item>
+        <item>Send Message to Wear</item>
     </string-array>
 </resources>

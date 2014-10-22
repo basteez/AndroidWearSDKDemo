@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/messageET"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:hint="@string/datasync_et_hint" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sync"
+        android:id="@+id/syncBtn"
+        android:layout_below="@+id/messageET"
+        android:layout_alignLeft="@+id/messageET"
+        android:layout_alignStart="@+id/messageET"
+        android:layout_marginTop="56dp"
+        android:layout_alignRight="@+id/messageET"
+        android:layout_alignEnd="@+id/messageET" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/data_item_sync_notice"
+        android:id="@+id/textView"
+        android:layout_below="@+id/syncBtn"
+        android:layout_alignLeft="@+id/syncBtn"
+        android:layout_alignStart="@+id/syncBtn" />
+
+</RelativeLayout>

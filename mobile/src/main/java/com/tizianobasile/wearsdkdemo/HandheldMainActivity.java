@@ -8,17 +8,15 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.app.RemoteInput;
 import android.support.v4.app.NotificationCompat.Action;
 import android.support.v4.app.NotificationCompat.WearableExtender;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.app.RemoteInput;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 
 public class HandheldMainActivity extends ActionBarActivity {
@@ -35,23 +33,24 @@ public class HandheldMainActivity extends ActionBarActivity {
 
     //GROUP CONSTANTS
     public static final String GROUP_ID = "com.tizianobasile.wearsdkdemo.group";
+
     //GUI
-    private ListView menuList;
-    private String[] menuEntries;
+    private ListView mMenuList;
+    private String[] mMenuEntries;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_handheld_main);
         //Get Layout References
-        menuList = (ListView) findViewById(R.id.menuList);
+        mMenuList = (ListView) findViewById(R.id.menuList);
         //Populate menu
-        menuEntries = getResources().getStringArray(R.array.menu_main);
-        menuList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, menuEntries));
-        menuList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mMenuEntries = getResources().getStringArray(R.array.menu_main);
+        mMenuList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mMenuEntries));
+        mMenuList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch(position){
+                switch (position) {
                     case 0:
                         //Simple Notification
                         issueNotification(SIMPLE_NOTIFICATION_ID, createSimpleNotification());
@@ -76,76 +75,84 @@ public class HandheldMainActivity extends ActionBarActivity {
                         //Grouped Notification
                         issueNotification(GROUPED_NOTIFICATION_ID, createGroupedNotification());
                         break;
+                    case 6:
+                        //Sync DataItem with asset
+                        Intent mDataItemSyncIntent = new Intent(getApplicationContext(), DataItemSyncActivity.class);
+                        startActivity(mDataItemSyncIntent);
+                        break;
+                    case 7:
+                        //Send Message to wear
+
+                        break;
                 }
             }
         });
     }
-
     //NOTIFICATION METHODS
 
     public Notification createSimpleNotification(){
-        Notification notification = new NotificationCompat.Builder(this)
+        Notification mNotification = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setContentTitle("Simple Notification")
                 .setContentText("Just a title, a text and an icon")
                 .build();
-        return notification;
+        return mNotification;
     }
 
     public Notification createStandardActionNotification(){
-        Intent intent = new Intent(this, NotificationIntentActivity.class);
-        intent.putExtra("EventID", 1);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        Intent mIntent = new Intent(this, NotificationIntentActivity.class);
+        mIntent.putExtra("EventID", 1);
+        PendingIntent mPendingIntent = PendingIntent.getActivity(this, 0, mIntent, 0);
 
-        Notification notification = new NotificationCompat.Builder(this)
+        Notification mNotification = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setContentTitle("Standard Action Notification")
                 .setContentText("Swipe Left to show the action")
-                .setContentIntent(pendingIntent)
+                .setContentIntent(mPendingIntent)
                 .build();
-        return notification;
+        return mNotification;
     }
 
     public Notification createCustomActionNotification(){
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        Uri position = Uri.parse("geo:0,0?q=41.109388,16.878843");
-        intent.setData(position);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        Intent mIntent = new Intent(Intent.ACTION_VIEW);
+        Uri mPosition = Uri.parse("geo:0,0?q=41.109388,16.878843");
+        mIntent.setData(mPosition);
+        PendingIntent mPendingIntent = PendingIntent.getActivity(this, 0, mIntent, 0);
 
-        Notification notification = new NotificationCompat.Builder(this)
+        Notification mNotification = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setContentTitle("Custom Action Notification")
                 .setContentText("Swipe Left to check the action")
-                .addAction(R.drawable.ic_location, "Check your position", pendingIntent)
+                .addAction(R.drawable.ic_location, "Check your position", mPendingIntent)
                 .build();
-        return notification;
+        return mNotification;
     }
 
     public Notification createVoiceInputNotification(){
-        String[] choices = {"Yes", "No"};
+        String[] mChoices = {"Yes", "No"};
 
-        Intent intent = new Intent(this, ReplyActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent mIntent = new Intent(this, ReplyActivity.class);
+        PendingIntent mPendingIntent = PendingIntent.getActivity(this, 0, mIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        RemoteInput remoteInput = new RemoteInput.Builder(EXTRA_VOICE_REPLY)
+        RemoteInput mRemoteInput = new RemoteInput.Builder(EXTRA_VOICE_REPLY)
                 .setLabel("Are you happy?")
-                .setChoices(choices)
+                .setChoices(mChoices)
                 .build();
 
-        Action action = new Action.Builder(R.drawable.ic_reply, "Reply", pendingIntent)
-                .addRemoteInput(remoteInput)
+        Action mAction = new Action.Builder(R.drawable.ic_reply, "Reply", mPendingIntent)
+                .addRemoteInput(mRemoteInput)
                 .build();
 
-        WearableExtender extender = new WearableExtender()
-                .addAction(action);
+        WearableExtender mExtender = new WearableExtender()
+                .addAction(mAction);
 
-        Notification notification = new NotificationCompat.Builder(this)
+        Notification mNotification = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setContentTitle("VoiceInput Notification")
                 .setContentText("Swipe Left to see the voice action")
-                .extend(extender)
+                .extend(mExtender)
                 .build();
-        return notification;
+        return mNotification;
     }
 
     public Notification createPagedNotification(){
@@ -157,6 +164,7 @@ public class HandheldMainActivity extends ActionBarActivity {
 
         Notification mSecondPage =
                 new NotificationCompat.Builder(this)
+            .setSmallIcon(R.drawable.ic_launcher)
             .setContentTitle("Paged Notification 2/2")
             .setContentText("This is the second page")
         .build();
@@ -184,12 +192,12 @@ public class HandheldMainActivity extends ActionBarActivity {
                 .setGroup(GROUP_ID)
                 .build();
 
-        Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
+        Bitmap mLargeIcon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
 
         Notification mSummaryNotification = new NotificationCompat.Builder(this)
                 .setContentTitle("2 Notifications fromw WearSDKDemo")
                 .setSmallIcon(R.drawable.ic_launcher)
-                .setLargeIcon(largeIcon)
+                .setLargeIcon(mLargeIcon)
                 .setStyle(new NotificationCompat.InboxStyle()
                     .addLine("First Notification    Hi, I'm a notification")
                     .addLine("Second Notification   Yay, here's the second one!")
@@ -199,9 +207,9 @@ public class HandheldMainActivity extends ActionBarActivity {
                 .setGroupSummary(true)
                 .build();
 
-        Notification[] notifications = new Notification[]{mFirstNotification, mSecondNotification, mSummaryNotification};
+        Notification[] mNotifications = new Notification[]{mFirstNotification, mSecondNotification, mSummaryNotification};
 
-        return notifications;
+        return mNotifications;
     }
 
     public void issueNotification(int mNotificationId, Notification mNotification){
@@ -219,5 +227,4 @@ public class HandheldMainActivity extends ActionBarActivity {
             i++;
         }
     }
-
 }
