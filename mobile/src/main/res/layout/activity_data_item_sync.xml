@@ -19,12 +19,11 @@
         android:layout_height="wrap_content"
         android:text="Sync"
         android:id="@+id/syncBtn"
-        android:layout_below="@+id/messageET"
-        android:layout_alignLeft="@+id/messageET"
-        android:layout_alignStart="@+id/messageET"
-        android:layout_marginTop="56dp"
-        android:layout_alignRight="@+id/messageET"
-        android:layout_alignEnd="@+id/messageET" />
+        android:layout_above="@+id/textView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/textView"
+        android:layout_alignEnd="@+id/textView" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -32,8 +31,26 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="@string/data_item_sync_notice"
         android:id="@+id/textView"
-        android:layout_below="@+id/syncBtn"
-        android:layout_alignLeft="@+id/syncBtn"
-        android:layout_alignStart="@+id/syncBtn" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/assetImageView"
+        android:layout_below="@+id/messageET"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/ic_picture" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="click the icon above to create an Asset"
+        android:id="@+id/textView2"
+        android:layout_below="@+id/assetImageView"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

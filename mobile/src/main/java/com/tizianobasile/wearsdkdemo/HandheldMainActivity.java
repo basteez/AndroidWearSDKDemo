@@ -82,7 +82,6 @@ public class HandheldMainActivity extends ActionBarActivity {
                         break;
                     case 7:
                         //Send Message to wear
-
                         break;
                 }
             }
