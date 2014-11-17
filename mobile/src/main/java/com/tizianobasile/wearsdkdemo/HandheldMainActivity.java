@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Action;
@@ -13,13 +14,25 @@ import android.support.v4.app.NotificationCompat.WearableExtender;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.RemoteInput;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.wearable.MessageApi;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.NodeApi;
+import com.google.android.gms.wearable.Wearable;
 
-public class HandheldMainActivity extends ActionBarActivity {
+import java.util.Collection;
+import java.util.HashSet;
+
+
+public class HandheldMainActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     //NOTIFICATION IDs CONSTANTS
     public static final int SIMPLE_NOTIFICATION_ID = 11;
     public static final int STANDARD_ACTION_NOTIFICATION_ID = 22;
@@ -38,10 +51,19 @@ public class HandheldMainActivity extends ActionBarActivity {
     private ListView mMenuList;
     private String[] mMenuEntries;
 
+    //DATA LAYER
+    private GoogleApiClient mGoogleApiClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_handheld_main);
+        //Build GoogleApiClient
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(Wearable.API)
+                .build();
         //Get Layout References
         mMenuList = (ListView) findViewById(R.id.menuList);
         //Populate menu
@@ -81,12 +103,26 @@ public class HandheldMainActivity extends ActionBarActivity {
                         startActivity(mDataItemSyncIntent);
                         break;
                     case 7:
-                        //Send Message to wear
+                        new MessageTask().execute();
+                        //sendMessageToWear();
                         break;
                 }
             }
         });
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
+    }
+
     //NOTIFICATION METHODS
 
     public Notification createSimpleNotification(){
@@ -225,5 +261,67 @@ public class HandheldMainActivity extends ActionBarActivity {
             mNotificationManager.notify(notificationId + i, notification);
             i++;
         }
+    }
+
+    //MESSAGE API METHODS
+    public void sendMessageToWear(){
+        Log.d("MOBILE", "sendMessageToWear");
+        Collection<String> mNodes = getNodes();
+        Log.d("MOBILE", mNodes.toString());
+        for(String node : mNodes){
+                /*MessageApi.SendMessageResult mSendMessageResult = */Wearable.MessageApi.sendMessage(mGoogleApiClient, node, "/start/MessageActivity", null).setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
+                    @Override
+                    public void onResult(MessageApi.SendMessageResult sendMessageResult) {
+                        Log.d("MOBILE", sendMessageResult.getStatus().toString());
+                        if(!sendMessageResult.getStatus().isSuccess()){
+                            Log.e("MOBILE", "Error sending message to wear: " + sendMessageResult.getStatus());
+                        }
+                    }
+                });
+        }
+    }
+
+    private Collection<String> getNodes(){
+        final HashSet<String> mResults = new HashSet<String>();
+        /*NodeApi.GetConnectedNodesResult mNodes =*/ Wearable.NodeApi.getConnectedNodes(mGoogleApiClient).setResultCallback(new ResultCallback<NodeApi.GetConnectedNodesResult>() {
+            @Override
+            public void onResult(NodeApi.GetConnectedNodesResult getConnectedNodesResult) {
+                for(Node mNode : getConnectedNodesResult.getNodes()){
+                    mResults.add(mNode.getId());
+                }
+            }
+        });
+        /*for(Node mNode : mNodes.getNodes()){
+            mResults.add(mNode.getId());
+        }*/
+
+        return mResults;
+    }
+
+    //ASYNCTAKS FOR MESSANGE SENDING
+    private class MessageTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            sendMessageToWear();
+            return null;
+        }
+    }
+
+    //DATA LAYER CALLBACKS
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.d("MOBILE", "GoogleApiClient connected");
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.d("MOBILE", "GoogleApiClient connection suspended");
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.d("MOBILE", "GoogleApiClient connection failed");
     }
 }
